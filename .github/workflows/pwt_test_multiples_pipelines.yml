@@ -31,15 +31,15 @@ jobs:
     steps:
     - name: Install jq
       run: apt-get update && apt-get install -y jq
-    - name: Checkout Playwright-Intro (config)
-      uses: actions/checkout@v4
-      with:
-        path: Playwright-Intro
     - name: Checkout playwright-tests-repo (tests)
       uses: actions/checkout@v4
       with:
         repository: pc-aide/playwright-tests-repo
         path: playwright-tests-repo
+    - name: Checkout Playwright-Intro (config)
+      uses: actions/checkout@v4
+      with:
+        path: Playwright-Intro
     - name: Copy Playwright config to tests repo
       run: cp Playwright-Intro/playwright.config.ts playwright-tests-repo/
     - name: Install dependencies
