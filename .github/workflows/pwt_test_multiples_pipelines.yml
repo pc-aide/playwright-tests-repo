@@ -36,10 +36,8 @@ jobs:
       with:
         repository: pc-aide/playwright-tests-repo
         path: playwright-tests-repo
-    - name: Checkout Playwright-Intro (config)
-      uses: actions/checkout@v4
-      with:
-        path: Playwright-Intro
+    - name: Clone Playwright-Intro (config)
+      run: git clone https://github.com/pc-aide/Playwright-Intro.git Playwright-Intro
     - name: Copy Playwright config to tests repo
       run: cp Playwright-Intro/playwright.config.ts playwright-tests-repo/
     - name: Install dependencies
