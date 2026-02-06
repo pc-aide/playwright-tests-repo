@@ -1,0 +1,39 @@
+name: import cert
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.57.0-jammy
+    steps:
+    - name: Install jq
+      run: apt-get update && apt-get install -y jq
+    - name: Checkout playwright-tests-repo (tests)
+      uses: actions/checkout@v4
+      with:
+        repository: pc-aide/playwright-tests-repo
+        path: playwright-tests-repo
+    - name: Import cert.crt into CA store
+      run: |
+        cp playwright-tests-repo/cert.crt /usr/local/share/ca-certificates/cert.crt
+        update-ca-certificates
+    - name: Clone Playwright-Intro (config)
+      run: git clone https://github.com/pc-aide/Playwright-Intro.git Playwright-Intro
+    - name: Copy Playwright config to tests repo
+      run: cp Playwright-Intro/playwright.config.ts playwright-tests-repo/
+    - name: Install dependencies
+      run: npm i @playwright/test@1.57.0
+      working-directory: playwright-tests-repo
+    - name: Run cert check test
+      run: xvfb-run -a npx playwright test tests/checkUp-certmgr-chrome.spec.ts --project=chrome --headed
+      working-directory: playwright-tests-repo
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: screenshots
+        path: 'playwright-tests-repo/*.png'
+        retention-days: 30
