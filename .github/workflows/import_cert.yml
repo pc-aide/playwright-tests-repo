@@ -10,17 +10,19 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.57.0-jammy
     steps:
-    - name: Install jq
-      run: apt-get update && apt-get install -y jq
+    - name: Install jq and libnss3-tools
+      run: apt-get update && apt-get install -y jq libnss3-tools
     - name: Checkout playwright-tests-repo (tests)
       uses: actions/checkout@v4
       with:
         repository: pc-aide/playwright-tests-repo
         path: playwright-tests-repo
-    - name: Import cert.crt into CA store
+    - name: Import cert.crt into Chrome certificate manager
       run: |
-        cp playwright-tests-repo/cert.crt /usr/local/share/ca-certificates/cert.crt
-        update-ca-certificates
+        NSSDB_DIR="$HOME/.pki/nssdb"
+        mkdir -p "$NSSDB_DIR"
+        certutil -d sql:"$NSSDB_DIR" -N --empty-password
+        certutil -d sql:"$NSSDB_DIR" -A -t "C,," -n "custom-cert" -i playwright-tests-repo/cert.crt
     - name: Clone Playwright-Intro (config)
       run: git clone https://github.com/pc-aide/Playwright-Intro.git Playwright-Intro
     - name: Copy Playwright config to tests repo
