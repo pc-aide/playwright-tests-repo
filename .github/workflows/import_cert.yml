@@ -21,6 +21,10 @@ jobs:
       run: |
         cp playwright-tests-repo/cert.crt /usr/local/share/ca-certificates/cert.crt
         update-ca-certificates
+    - name: Clone Playwright-Intro (config)
+      run: git clone https://github.com/pc-aide/Playwright-Intro.git Playwright-Intro
+    - name: Copy Playwright config to tests repo
+      run: cp Playwright-Intro/playwright.config.ts playwright-tests-repo/playwright.config.ts
     - name: Install dependencies
       run: npm i @playwright/test@1.57.0
       working-directory: playwright-tests-repo
