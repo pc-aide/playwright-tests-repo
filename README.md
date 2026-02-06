@@ -2,5 +2,5 @@
 
 ## Install
 ````sh
-npm i @playwright1.57.0/test @types/node
+npm i @playwright/test@1.57.0 @types/node
 ````
