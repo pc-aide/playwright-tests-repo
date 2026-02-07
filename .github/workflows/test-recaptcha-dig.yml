@@ -1,0 +1,48 @@
+name: test recaptcha api avec dig
+
+on:
+  workflow_dispatch:
+
+jobs:
+  dig-recaptcha:
+    runs-on: ubuntu-latest
+    steps:
+      - name: dig recaptcha.net
+        run: |
+          echo "=== A record (IPv4) ==="
+          dig +short recaptcha.net A
+
+          echo "=== AAAA record (IPv6) ==="
+          dig +short recaptcha.net AAAA
+
+          IP=$(dig +short recaptcha.net A | head -n1)
+          IP6=$(dig +short recaptcha.net AAAA | head -n1)
+
+          if [[ -n "$IP" || -n "$IP6" ]]; then
+            echo "recaptcha.net est joignable"
+            [[ -n "$IP" ]]  && echo "IPv4 : $IP"
+            [[ -n "$IP6" ]] && echo "IPv6 : $IP6"
+          else
+            echo "::error::Aucune réponse DNS pour recaptcha.net"
+            exit 1
+          fi
+
+      - name: dig www.google.com/recaptcha
+        run: |
+          echo "=== A record (IPv4) ==="
+          dig +short www.google.com A
+
+          echo "=== AAAA record (IPv6) ==="
+          dig +short www.google.com AAAA
+
+          IP=$(dig +short www.google.com A | head -n1)
+          IP6=$(dig +short www.google.com AAAA | head -n1)
+
+          if [[ -n "$IP" || -n "$IP6" ]]; then
+            echo "www.google.com est joignable"
+            [[ -n "$IP" ]]  && echo "IPv4 : $IP"
+            [[ -n "$IP6" ]] && echo "IPv6 : $IP6"
+          else
+            echo "::error::Aucune réponse DNS pour www.google.com"
+            exit 1
+          fi
